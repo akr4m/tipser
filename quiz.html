@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Quiz Generator</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js for interactivity -->
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Apply the Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom focus style for textarea */
+        .form-textarea:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px #c7d2fe;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
+    
+    <!-- Main component container -->
+    <div 
+        x-data="{ 
+            question: '',
+            copied: false,
+            get markdownText() {
+                const placeholder = '[Your question goes here. Frame it as a scenario or a direct question about a concept, feature, or term.]';
+                const displayQuestion = this.question.trim() === '' ? placeholder : this.question;
+                return `## #QuickQuiz 🧠\n\n> ${displayQuestion}\n\n\`> Think you know the answer? Drop it in the replies! 👇\``;
+            },
+            copyToClipboard() {
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = this.markdownText;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+                
+                this.copied = true;
+                setTimeout(() => { this.copied = false }, 2000);
+            }
+        }" 
+        class="w-full max-w-2xl bg-white p-6 sm:p-8 rounded-xl shadow-lg space-y-6"
+    >
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-800">Quick Quiz Generator</h1>
+            <p class="text-slate-500 mt-1">Create engaging quiz questions in seconds.</p>
+        </div>
+
+        <!-- Input Field -->
+        <div>
+            <label for="quizQuestion" class="block text-sm font-semibold text-slate-700 mb-2">Your Question:</label>
+            <textarea 
+                id="quizQuestion" 
+                rows="4" 
+                class="w-full form-textarea border border-slate-300 rounded-lg p-3 transition duration-200 ease-in-out"
+                placeholder="e.g., What's the difference between let and const in JavaScript?" 
+                x-model="question"
+            ></textarea>
+        </div>
+
+        <!-- Preview and Copy Section -->
+        <div class="bg-slate-50 p-4 border border-slate-200 rounded-lg space-y-4">
+            <h2 class="text-sm font-semibold text-slate-600">Markdown Preview</h2>
+            <!-- The preview area uses a pre-wrap to respect newlines and spacing -->
+            <div class="text-slate-800 text-base whitespace-pre-wrap p-4 bg-white rounded-md border border-slate-200" x-text="markdownText"></div>
+            
+            <!-- Copy Button -->
+            <button 
+                class="w-full flex items-center justify-center px-4 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 ease-in-out"
+                @click="copyToClipboard()"
+            >
+                <!-- Show different text/icon based on the 'copied' state -->
+                <span x-show="!copied" class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Copy Markdown
+                </span>
+                <span x-show="copied" class="flex items-center">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Copied!
+                </span>
+            </button>
+        </div>
+    </div>
+</body>
+</html>
